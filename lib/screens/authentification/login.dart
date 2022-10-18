@@ -1,28 +1,27 @@
 import 'package:authentification_django_firebase/core/utility/textButton.dart';
-import 'package:authentification_django_firebase/core/utility/text_widgets.dart';
-import 'package:authentification_django_firebase/core/utility/textfield.dart';
-import 'package:authentification_django_firebase/screens/authentification/login.dart';
+import 'package:authentification_django_firebase/screens/authentification/forget_password.dart';
+import 'package:authentification_django_firebase/screens/authentification/sign_up.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/services/firebase/firebase_auth_methods.dart';
+import '../../core/utility/text_widgets.dart';
+import '../../core/utility/textfield.dart';
 
-class SignUp extends StatefulWidget {
-  static String routeName = '/sign-up';
+class Login extends StatefulWidget {
+  static String routeName = '/login';
 
-  const SignUp({Key? key}) : super(key: key);
+  const Login({Key? key}) : super(key: key);
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<Login> createState() => _LoginState();
 }
 
-class _SignUpState extends State<SignUp> {
-  TextEditingController mail_controller = TextEditingController();
-  TextEditingController name_controller = TextEditingController();
-  TextEditingController tel_controller = TextEditingController();
-  TextEditingController password_controller = TextEditingController();
+class _LoginState extends State<Login> {
+  TextEditingController mailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   bool passwordVisible = true;
 
@@ -31,17 +30,16 @@ class _SignUpState extends State<SignUp> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
   }
 
-  void signUpUser() async {
-    context.read<FirebaseAuthMethods>().signUpWithEmail(
-          email: mail_controller.text,
-          password: password_controller.text,
-          context: context,
-          fullName: name_controller.text,
-          phone: tel_controller.text,
-        );
+  void loginUser() {
+    context.read<FirebaseAuthMethods>().loginWithEmail(
+      email: mailController.text,
+      password: passwordController.text,
+      context: context,
+    );
   }
 
   @override
@@ -50,138 +48,130 @@ class _SignUpState extends State<SignUp> {
     width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0.0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: 30,
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Container(
           color: Colors.white,
           padding: const EdgeInsets.all(30),
           child: Column(
             children: [
-              Container(
-                  child: Center(
-                      child: SvgPicture.asset(
+              const SizedBox(
+                height: 40,
+              ),
+              Center(
+                  child: SvgPicture.asset(
                 'assets/illustrations/account_icons.svg',
                 height: height * 0.20,
                 width: width * 0.75,
                 color: Colors.blue,
-              ))),
+              )),
               SizedBox(
                 height: height * 0.03,
               ),
               Container(
                 alignment: Alignment.centerLeft,
-                child: boldText(text: 'Sign up'),
+                child: boldText(text: 'Login'),
               ),
               SizedBox(
                 height: height * 0.03,
               ),
               textField(
-                  controller: mail_controller,
+                  controller: mailController,
                   keyboardType: TextInputType.emailAddress,
                   icon: Icons.mail,
                   hintText: "E-mail ID"),
               SizedBox(
                 height: height * 0.03,
               ),
-              textField(
-                  controller: name_controller,
-                  icon: Icons.person,
-                  hintText: "Full name"),
-              const SizedBox(
-                height: 20,
-              ),
-              textField(
-                  controller: tel_controller,
-                  keyboardType: TextInputType.number,
-                  icon: Icons.phone,
-                  hintText: "Mobile"),
-              SizedBox(
-                height: height * 0.03,
-              ),
               textFieldP(
-                  controller: password_controller,
+                  controller: passwordController,
                   keyboardType: TextInputType.text,
                   icon: Icons.lock,
                   hintText: "Password"),
               SizedBox(
-                height: height * 0.03,
+                height: height * 0.01,
               ),
-              RichText(
-                  text: TextSpan(
-                children: [
-                  const TextSpan(
-                      text: "By signing up, you're agree to our ",
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black)),
-                  TextSpan(
-                      text: "Terms & Conditions ",
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.blue),
-                      onEnter: (event) {}),
-                  const TextSpan(
-                      text: "and ",
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.black)),
-                  TextSpan(
-                      text: "Privacy Policy",
-                      style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.blue),
-                      onEnter: (event) {}),
-                ],
-              )),
+              Container(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> const ForgetPassword()));
+                  },
+                  child: const Text(
+                    "Forget Password?",
+                    style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
               SizedBox(
-                height: height * 0.04,
+                height: height * 0.01,
               ),
               textButton(
-                  text: "Continue",
-                  function: signUpUser,
+                  text: "Login",
+                  function: loginUser,
                   height: height * 0.06,
                   width: width * 0.8),
+              const SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                onTap: () {
+                  context.read<FirebaseAuthMethods>().signInWithGoogle(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  height: height * 0.06,
+                  width: width * 0.8,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.2),
+                    borderRadius: const BorderRadius.horizontal(
+                        left: Radius.circular(15), right: Radius.circular(15)),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        'assets/images/google.png',
+                        height: 20,
+                        width: 20,
+                      ),
+                      SizedBox(
+                        width: height * 0.03,
+                      ),
+                      const Text(
+                        "Login with Google",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               SizedBox(
-                height: height * 0.04,
+                height: height * 0.05,
               ),
               RichText(
                 text: TextSpan(children: [
                   const TextSpan(
-                      text: "Joined us before?  ",
+                      text: "New to Logistic?  ",
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.normal,
                           color: Colors.black)),
                   TextSpan(
-                      text: "Login ",
+                      text: "Register ",
                       style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: Colors.blue),
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Login()));
-                        }),
+                      ..onTap = (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> const SignUp()));
+                      }
+                  ),
                 ]),
               )
             ],
